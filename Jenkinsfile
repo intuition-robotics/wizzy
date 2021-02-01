@@ -12,7 +12,7 @@ node("ci"){
           stage('Setup') {
               stageName = env.STAGE_NAME
               echo "### Cleanup workspace"
-              deleteDir()
+              Utils.cleanWorkspace(this)
               currentBuild.description = "Env: <b>${env.ENVIRONMENT}</b>"
           }
 
@@ -60,6 +60,8 @@ node("ci"){
                 notify.slackNotify("#infrastructure_alerts", "slack_jenkins_ci", "", "", "", false, "Failed to export dashboards from ${env.ENVIRONMENT}!", false, stageName)
             }
             throw e
+        } finally {
+          sh 'sudo chown -R jenkins:jenkins *'
         }
     }
 
